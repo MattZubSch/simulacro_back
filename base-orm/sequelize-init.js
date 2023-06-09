@@ -99,7 +99,58 @@ const articulos = sequelize.define(
   }
 );
 
+const deudores = sequelize.define(
+  "deudores",
+  {
+    IdDeudor: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    DeudorDescripcion: {
+      type: DataTypes.STRING(60),
+      allowNull: false,
+      validate: {
+        notEmpty: {
+          args: true,
+          msg: "DeudorDescripcion es requerido"
+        },
+        len: {
+          args: [5, 60],
+          msg: "DeudorDescripcion debe ser del tipo caracteres, entre 5 y 60 caracteres",
+        }
+      },
+      unique: {
+        args: true,
+        msg: "Este nombre ya existe en la tabla!!"
+      },
+    },
+    MontoAdeudado: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      validate: {
+        notNull: {
+          args:true,
+          msg: "MontoAdeudado es requerido",
+        }
+      }
+    }
+  },
+  {
+    hooks: {
+      beforeValidate: function (deudor, options) {
+        if (typeof deudor.DeudorDescripcion === "string") {
+          deudor.DeudorDescripcion = deudor.DeudorDescripcion.toUpperCase().trim();
+        }
+      },
+    },
+
+    timestamps: false,
+  }
+)
+
 module.exports = {
   sequelize,
   articulos,
+  deudores,
 };
